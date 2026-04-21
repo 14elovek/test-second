@@ -2,6 +2,7 @@ import {v4} from 'uuid'
 import bcrypt from 'bcrypt'
 import userModel from '../models/userModel.js'
 import tokenService from './token-service.js'
+import taskModel from '../models/taskModel.js'
 import mailService from './mail-service.js'
 import UserDto from '../dto/user-dto.js'
 import dotenv from 'dotenv'
@@ -73,11 +74,6 @@ class UserService {
       if (!user) throw ApiError.BadRequest('Некорректная ссылка активации')   
       user.isActivated = true
       await user.save()
-   }
-
-   async getUsers() {
-      const users = await userModel.find({})
-      return users
    }
 }
 

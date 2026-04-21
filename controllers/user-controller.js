@@ -19,7 +19,7 @@ class Controller {
          next(err)
       }
    }
-      async login(req, res, next) {
+   async login(req, res, next) {
       try {
          const { email, password } = req.body
          const userData = await userService.login(email, password)
@@ -29,7 +29,7 @@ class Controller {
          next(err)
       }
    }
-      async logout(req, res, next) {
+   async logout(req, res, next) {
       try {
          const {refreshToken} = req.cookies
          await userService.logout(refreshToken)
@@ -39,7 +39,7 @@ class Controller {
          next(err)
       }
    }
-      async refresh(req, res, next) {
+   async refresh(req, res, next) {
       try {
          const {refreshToken} = req.cookies
          const userData = await userService.refresh(refreshToken)
@@ -49,19 +49,11 @@ class Controller {
          next(err)
       }
    }
-      async activate(req, res, next) {
+   async activate(req, res, next) {
       try {
          const activationLink = req.params.link
          await userService.activate(activationLink)
          return res.redirect(process.env.CLIENT_URL)
-      } catch(err) {
-         next(err)
-      }
-   }
-      async getUsers(req, res, next) {
-      try {
-         const users = await userService.getUsers()
-         res.json(users)
       } catch(err) {
          next(err)
       }
