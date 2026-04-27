@@ -2,6 +2,7 @@ import {v4} from 'uuid'
 import bcrypt from 'bcrypt'
 import userModel from '../models/userModel.js'
 import tokenService from './token-service.js'
+import blogService from './blog-service.js'
 import mailService from './mail-service.js'
 import UserDto from '../dto/user-dto.js'
 import dotenv from 'dotenv'
@@ -23,6 +24,8 @@ class UserService {
       const userDto = new UserDto(user)
       const tokens = await tokenService.generateTokens({...userDto})
       await tokenService.saveToken(userDto.id, tokens.refreshToken)
+
+      await blogService.createBlog(userDto.id)
 
       return {...tokens, user: userDto}
    }
