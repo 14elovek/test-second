@@ -32,6 +32,11 @@ class ExpensesService {
       return expenses
    }
 
+   async getSortExpenses(dateFrom, dateTo, userId) {
+      const expenses = await expenseModel.find({date: {$gte: new Date(dateFrom), $lte: new Date(dateTo)}})
+      return expenses
+   }
+
    async updateExpense(userId, sum, title, category) {
       if (!sum && !title && !category) throw ApiError.BadRequest('Не указаны значения')
 

@@ -33,7 +33,7 @@ router.post('/setLimit',
    }),
    authMiddleware, expensesController.setLimit)
 router.get('/expenses', authMiddleware, expensesController.getExpenses)
-router.get('/expenses', authMiddleware, expensesController.getExpenses)
+router.get('/expenses/search', authMiddleware, expensesController.getSortExpenses)
 router.get('/expensesForMonth', authMiddleware, expensesController.getExpensesForMonth)
 
 export default router

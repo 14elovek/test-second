@@ -14,6 +14,16 @@ class ExpensesController {
       }
    }
 
+   async getSortExpenses(req, res, next) {
+      try {
+         const {dateFrom, dateTo} = req.query         
+         const expenses = await expensesService.getSortExpenses(dateFrom, dateTo, req.user.id)
+         return res.json(expenses)
+      } catch(err) {
+         next(err)
+      }
+   }
+
    async addExpense(req, res, next) {
       try {
          const errors = validationResult(req)
