@@ -1,5 +1,4 @@
 import expenseModel from '../models/expenseModel.js'
-import monthlyExpensesModel from '../models/monthlyExpensesModel.js'
 import ApiError from '../exceptions/api-error.js'
 
 class ExpensesService {
@@ -9,17 +8,9 @@ class ExpensesService {
       }
 
       const date = new Date()
-      let monthlyExpenses = await monthlyExpensesModel.findOne({user: userId, date: `${date.getFullYear()}.${date.getMonth()}`})
-      if (!monthlyExpenses) {
-         monthlyExpenses = await monthlyExpensesModel.create({user: userId, date: `${date.getFullYear()}.${date.getMonth()}`, sum})
-      } else {
-         monthlyExpenses.sum += sum
-         await monthlyExpenses.save()
-      }
-      
+
       return await expenseModel.create({
          user: userId,
-         monthlyExpenses: monthlyExpenses._id,
          sum,
          title,
          date,
@@ -33,32 +24,35 @@ class ExpensesService {
    }
 
    async getSortExpenses(dateFrom, dateTo, userId) {
-      const expenses = await expenseModel.find({date: {$gte: new Date(dateFrom), $lte: new Date(dateTo)}})
+      const expenses = await expenseModel.find({date: {$gte: new Date(dateFrom), $lte: new Date(dateTo)}, user: userId})
       return expenses
    }
 
-   async updateExpense(userId, sum, title, category) {
+   async updateExpense(userId, expenseId, sum, title, category) {
       if (!sum && !title && !category) throw ApiError.BadRequest('Не указаны значения')
 
-      const monthExpenses = await monthlyExpensesModel.findOne({user: userId})
-      const expense = await expenseModel.findOne({user: userId})
+      const expense = await expenseModel.findById(expenseId)
+      console.log(userId + "   ====   " + expense.user)
+      if (expense.user != userId) throw ApiError.Forbidden()
 
-      if (sum) {
-         if (expense.sum > sum) monthExpenses.sum -= Math.abs(expense.sum - sum)
-         if (expense.sum < sum) monthExpenses.sum += Math.abs(expense.sum - sum)
-         await monthExpenses.save()
-
-         expense.sum = sum
-      }
+      if (sum) expense.sum = sum
       if (title) expense.title = title
       if (category) expense.category = category
 
       return await expense.save()
    }
 
-   
-   async getExpensesForMonth(userId) {
-      const expenses = await monthlyExpensesModel.find({user: userId})
+   async getExpensesForMonth(userId, month) {
+      const dateFrom = new Date(`${month}-01T00:00:00.000Z`)
+      const dateTo = new Date(`${month}-01T00:00:00.000Z`)
+      dateTo.setUTCMonth(dateTo.getUTCMonth() + 1)
+
+      const expenses = await expenseModel.find({date: {$gte: dateFrom, $lt: dateTo}, user: userId})
+      const result = await expenseModel.aggregate([
+         { match: {date: {$gte: dateFrom, $lt: dateTo}, user: userId}},
+         { group: { _id: "sum", total: { $sum: 1}}}
+      ])
+
       return expenses
    }
 

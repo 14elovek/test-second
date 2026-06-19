@@ -45,7 +45,7 @@ class ExpensesController {
             return next(ApiError.BadRequest('Ошибка при валидации', errors.array()))
          }
 
-         await expensesService.updateExpense(req.user.id, req.body.sum, req.body.title, req.body.category)
+         await expensesService.updateExpense(req.user.id, req.body.expenseId, req.body.sum, req.body.title, req.body.category)
          return res.sendStatus(200)
       } catch(err) {
          next(err)
@@ -54,7 +54,7 @@ class ExpensesController {
 
    async getExpensesForMonth(req, res, next) {
       try {
-         const expenses = await expensesService.getExpensesForMonth(req.user.id)
+         const expenses = await expensesService.getExpensesForMonth(req.user.id, req.query.month)
          return res.json(expenses)
       } catch(err) {
          next(err)
