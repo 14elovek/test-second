@@ -32,6 +32,7 @@ router.post('/setLimit',
       else return false
    }),
    authMiddleware, expensesController.setLimit)
+router.delete('/expenses', authMiddleware, expensesController.removeExpense)
 router.get('/expenses', authMiddleware, expensesController.getExpenses)
 router.get('/expenses/search', authMiddleware, expensesController.getSortExpenses)
 router.get('/expenses/month', authMiddleware, expensesController.getExpensesForMonth)

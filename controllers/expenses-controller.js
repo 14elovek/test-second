@@ -63,7 +63,7 @@ class ExpensesController {
 
    async removeExpense(req, res, next) {
       try {
-         await expensesService.removeExpense(req.body.id)
+         await expensesService.removeExpense(req.query.expenseId)
          return res.sendStatus(200)
       } catch(err) {
          next(err)
