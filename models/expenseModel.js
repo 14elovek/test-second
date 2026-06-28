@@ -8,4 +8,6 @@ const ExpenseSchema = new Schema({
    category: {type: String}
 })
 
+ExpenseSchema.index({user: 1, date: 1})
+
 export default model('Expense', ExpenseSchema)
