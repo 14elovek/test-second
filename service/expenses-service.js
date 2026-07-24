@@ -1,5 +1,5 @@
-import expenseModel from '../models/expenseModel.js'
-import ApiError from '../exceptions/api-error.js'
+import expenseModel from '../models/expenseModel.ts'
+import ApiError from '../exceptions/api-error.ts'
 
 class ExpensesService {
    async addExpense(userId, sum, title, category) {

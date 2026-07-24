@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    
+    "allowJs": true, 
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    
+    "sourceMap": true,
+    "outDir": "./dist",
+    "rootDir": "./"
+  },
+  "include": ["**/*"],
+  "exclude": ["node_modules", "dist"]
+}

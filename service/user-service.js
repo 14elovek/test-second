@@ -1,12 +1,12 @@
 import {v4} from 'uuid'
 import bcrypt from 'bcrypt'
-import userModel from '../models/userModel.js'
+import userModel from '../models/userModel.ts'
 import tokenService from './token-service.js'
 import mailService from './mail-service.js'
-import UserDto from '../dto/user-dto.js'
+import UserDto from '../dto/user-dto.ts'
 import dotenv from 'dotenv'
 dotenv.config()
-import ApiError from '../exceptions/api-error.js'
+import ApiError from '../exceptions/api-error.ts'
 
 class UserService {
    async registration(email, password) {

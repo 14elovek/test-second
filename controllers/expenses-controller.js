@@ -2,7 +2,7 @@ import dotenv from 'dotenv'
 dotenv.config()
 import expensesService from '../service/expenses-service.js'
 import { validationResult } from 'express-validator'
-import ApiError from '../exceptions/api-error.js'
+import ApiError from '../exceptions/api-error.ts'
 
 class ExpensesController {
    async getExpenses(req, res, next) {

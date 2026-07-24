@@ -2,7 +2,7 @@ import userService from '../service/user-service.js'
 import dotenv from 'dotenv'
 dotenv.config()
 import { validationResult } from 'express-validator'
-import ApiError from '../exceptions/api-error.js'
+import ApiError from '../exceptions/api-error.ts'
 
 class Controller {
    async registration(req, res, next) {
