@@ -8,8 +8,8 @@ import router from './router/router.js'
 import mongoose from 'mongoose'
 import errorMiddleware from './middlewares/error-middleware.js'
 
-const LINK = process.env.MONGOOSE_LINK
-const PORT = process.env.PORT
+const LINK = process.env.MONGOOSE_LINK || 'mongodb://localhost:27017/'
+const PORT = process.env.PORT || 5000
 const app = express()
 
 app.use(helmet())

@@ -1,14 +1,9 @@
 import ApiError from '../exceptions/api-error'
 import tokenService from '../service/token-service'
-import UserDto from '../dto/user-dto'
 import { Response, NextFunction } from 'express'
-import { AppRequest } from '../interfaces/request-interface'
+import { FreeRequest } from '../interfaces/request-interface'
 
-export default function authMiddleware(
-   req: AppRequest,
-   res: Response,
-   next: NextFunction
-) {
+export default function authMiddleware(req: FreeRequest, res: Response, next: NextFunction) {
       const authHeader = req.headers.authorization
       if (!authHeader) {
          return next(ApiError.UnauthorizedError())

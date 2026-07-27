@@ -20,12 +20,17 @@
     "helmet": "^8.2.0",
     "jsonwebtoken": "^9.0.3",
     "mongodb": "^6.21.0",
-    "mongoose": "^8.22.0",
+    "mongoose": "^8.24.1",
     "nodemailer": "^8.0.5",
     "uuid": "^13.0.0"
   },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/nodemailer": "^8.0.1",
     "tsx": "^4.23.1",
     "typescript": "^6.0.3"
   }

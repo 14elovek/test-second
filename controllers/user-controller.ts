@@ -6,16 +6,12 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 interface AuthBody {
-   email?: string
-   password?: string
-}
-
-interface ActivationLinkParams {
-   link: string
+   email: string
+   password: string
 }
 
 class UserController {
-   async registration(req: Request<{}, {}, AuthBody>, res: Response) {
+   async registration(req: Request<{},{},AuthBody,{}>, res: Response) {
       const errors = validationResult(req)
       if (!errors.isEmpty()) {
          throw ApiError.BadRequest('Ошибка при валидации', errors.array())
@@ -28,7 +24,7 @@ class UserController {
       res.json(userData)
    }
 
-   async login(req: Request<{}, {}, AuthBody>, res: Response) {
+   async login(req: Request<{},{},AuthBody,{}>, res: Response) {
       const { email, password } = req.body
       const userData = await userService.login(email, password)
       res.cookie('refreshToken', userData.refreshToken, {maxAge: 30*24*60*60*1000, httpOnly: true})
@@ -50,7 +46,7 @@ class UserController {
       res.json(userData)
    }
 
-   async activate(req: Request<ActivationLinkParams>, res: Response) {
+   async activate(req: Request<{ link: string },{},{},{}>, res: Response) {
       const activationLink = req.params.link
       await userService.activate(activationLink)
       res.redirect(process.env.CLIENT_URL || 'http://localhost:5000')
