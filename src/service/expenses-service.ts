@@ -38,9 +38,9 @@ class ExpensesService {
       category?: string
    ) {
       const expense: any = await expenseModel.findById(expenseId)
-      
+
       if (!expense) throw ApiError.BadRequest('Расход с таким ID не найден'); 
-      if (expense.user != userId) throw ApiError.Forbidden()
+      if (expense.user.toString() != userId) throw ApiError.Forbidden()
 
       if (sum !== undefined) expense.sum = sum
       if (title !== undefined) expense.title = title
