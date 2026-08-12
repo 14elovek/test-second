@@ -1,7 +1,6 @@
 import userService from '../service/user-service'
 import { Request, Response } from 'express'
-import dotenv from 'dotenv'
-dotenv.config()
+import 'dotenv/config'
 
 interface AuthBody {
    email: string
@@ -26,8 +25,10 @@ class UserController {
    }
 
    async logout(req: Request, res: Response) {
-      const {refreshToken} = req.cookies
-      await userService.logout(refreshToken)
+      const { refreshToken } = req.cookies
+      
+      if (refreshToken) await userService.logout(refreshToken)
+
       res.clearCookie('refreshToken')
       res.sendStatus(200)
    }

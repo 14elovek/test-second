@@ -1,11 +1,10 @@
 import jwt from "jsonwebtoken"
-import dotenv from "dotenv"
-dotenv.config()
+import 'dotenv/config'
 import tokenModel from '../models/tokenModel'
 import UserDto from "../dto/user-dto"
 
 class TokenService {
-   async generateTokens(payload: UserDto) {
+   generateTokens(payload: UserDto) {
       const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_TOKEN!, {expiresIn:'1h'})
       const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_TOKEN!, {expiresIn:'30d'})
 
@@ -17,8 +16,8 @@ class TokenService {
 
    async saveToken(userId: string, refreshToken: string) {
       return await tokenModel.findOneAndUpdate(
-         {user: userId},
-         { refreshToken},
+         { user: userId },
+         { refreshToken },
          { new: true, upsert: true }   
       )
    }

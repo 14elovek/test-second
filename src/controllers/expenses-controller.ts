@@ -1,9 +1,7 @@
 import { Request, Response } from 'express'
 import { checkAuth } from '../utils/check-auth'
 import expensesService from '../service/expenses-service'
-import ApiError from '../exceptions/api-error'
-import dotenv from 'dotenv'
-dotenv.config()
+import 'dotenv/config'
 
 interface AddExpenseBody {
    sum: number
@@ -27,13 +25,14 @@ class ExpensesController {
 
    async getSortExpenses(
       req: Request<{},{},{},{ dateFrom: string, dateTo: string }>,
-      res: Response) {
-         checkAuth(req)
+      res: Response
+   ) {
+      checkAuth(req)
 
-         const {dateFrom, dateTo} = req.query
-            
-         const expenses = await expensesService.getSortExpenses(dateFrom, dateTo, req.user.id)
-         res.json(expenses)
+      const {dateFrom, dateTo} = req.query
+         
+      const expenses = await expensesService.getSortExpenses(dateFrom, dateTo, req.user.id)
+      res.json(expenses)
    }
 
    async addExpense(req: Request<{},{},AddExpenseBody,{}>, res: Response) {
@@ -52,14 +51,12 @@ class ExpensesController {
       res.status(200).json({ success: true })
    }
 
-   async getExpensesForMonth(req: Request<{},{},{},{ month: string }>, res: Response) {
+   async getExpensesForMonth(req: Request<{},{},{},{ date: string }>, res: Response) {
       checkAuth(req)
 
-      const { month } = req.query
+      const { date } = req.query
 
-      if (!month) throw ApiError.BadRequest('Не указан месяц')
-
-      const expenses = await expensesService.getExpensesForMonth(req.user.id, month )
+      const expenses = await expensesService.getExpensesForMonth(req.user.id, date)
       res.json(expenses)
    }
 

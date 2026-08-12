@@ -35,25 +35,28 @@ class ExpensesService {
       expenseId: string, 
       sum?: number,
       title?: string,
-      category?: string) {
-         const expense: any = await expenseModel.findById(expenseId)
-         if (expense.user != userId) throw ApiError.Forbidden()
+      category?: string
+   ) {
+      const expense: any = await expenseModel.findById(expenseId)
+      
+      if (!expense) throw ApiError.BadRequest('Расход с таким ID не найден'); 
+      if (expense.user != userId) throw ApiError.Forbidden()
 
-         if (sum !== undefined) expense.sum = sum
-         if (title !== undefined) expense.title = title
-         if (category !== undefined) expense.category = category
+      if (sum !== undefined) expense.sum = sum
+      if (title !== undefined) expense.title = title
+      if (category !== undefined) expense.category = category
 
-         console.log(123)
-         return await expense.save()
+      return await expense.save()
    }
 
-   async getExpensesForMonth(userId: string, month: string) {
-      if (!month) throw ApiError.BadRequest('Не указан месяц')
+   async getExpensesForMonth(userId: string, fullDateStr: string) {
+      const date = new Date(fullDateStr);
+  
+      const year = date.getUTCFullYear();
+      const month = date.getUTCMonth(); 
 
-      const [yearStr, monthStr] = month.split('.')
-
-      const dateFrom = new Date(Date.UTC(Number(yearStr), Number(monthStr) - 1, 1))
-      const dateTo = new Date(Date.UTC(Number(yearStr), Number(monthStr), 1))
+      const dateFrom = new Date(Date.UTC(year, month, 1));
+      const dateTo = new Date(Date.UTC(year, month + 1, 1));
 
       const expenses = await expenseModel.find({date: {$gte: dateFrom, $lt: dateTo}, user: userId})
 
@@ -81,6 +84,6 @@ class ExpensesService {
    //    monthlyExpenses.limit = sum
    //    return await monthlyExpenses.save()
    // }
-} 
+}
 
 export default new ExpensesService

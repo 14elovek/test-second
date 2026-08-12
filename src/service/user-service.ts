@@ -4,8 +4,7 @@ import userModel from '../models/userModel'
 import tokenService from './token-service'
 import mailService from './mail-service'
 import UserDto from '../dto/user-dto'
-import dotenv from 'dotenv'
-dotenv.config()
+import 'dotenv/config'
 import ApiError from '../exceptions/api-error'
 
 class UserService {
@@ -23,7 +22,7 @@ class UserService {
          email
       )
       const userDto = new UserDto(user)
-      const tokens = await tokenService.generateTokens({...userDto})
+      const tokens = tokenService.generateTokens({...userDto})
       await tokenService.saveToken(userDto.id, tokens.refreshToken)
 
       return {...tokens, user: userDto}
@@ -40,7 +39,7 @@ class UserService {
       }
 
       const userDto = new UserDto(user)
-      const tokens = await tokenService.generateTokens({...userDto})
+      const tokens = tokenService.generateTokens({...userDto})
       await tokenService.saveToken(userDto.id, tokens.refreshToken)
 
       return {...tokens, user: userDto}
@@ -52,10 +51,6 @@ class UserService {
    }
 
    async refresh(refreshToken: string) {
-      if (!refreshToken) {
-         throw ApiError.UnauthorizedError()
-      }
-
       const userData = tokenService.validateRefreshToken(refreshToken)
       const tokenFromDb = await tokenService.findToken(refreshToken)
       if (!userData || !tokenFromDb) {
@@ -66,7 +61,7 @@ class UserService {
       if (!user) throw ApiError.UnauthorizedError()
 
       const userDto = new UserDto(user)
-      const tokens = await tokenService.generateTokens({...userDto})
+      const tokens = tokenService.generateTokens({...userDto})
       await tokenService.saveToken(userDto.id, tokens.refreshToken)
 
       return {...tokens, user: userDto}
