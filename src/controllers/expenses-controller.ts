@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { checkAuth } from '../utils/check-auth'
+import { checkAuth } from '../utils/check-auth-commented'
 import expensesService from '../service/expenses-service'
 import 'dotenv/config'
 
@@ -17,6 +17,8 @@ interface UpdateExpenseBody {
 
 class ExpensesController {
    async getExpenses(req: Request, res: Response) {
+      checkAuth(req)
+
       checkAuth(req)
 
       const expenses = await expensesService.getExpenses(req.user.id)
@@ -69,6 +71,7 @@ class ExpensesController {
    }
 
    // async setLimit(req: Request<{},{},{ sum: string },{}>, res: Response) {
+
    //    checkAuth(req)
 
    //    const { sum } = req.body

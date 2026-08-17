@@ -4,6 +4,7 @@ import cors from 'cors'
 import helmet from 'helmet'
 import router from './router/router'
 import errorMiddleware from './middlewares/error-middleware'
+import 'dotenv/config'
 
 const app = express()
 

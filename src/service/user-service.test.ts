@@ -54,7 +54,7 @@ describe('userService', () => {
             expect(userInDb).toBeTruthy()
             expect(userInDb?.email).toBe(testEmail)
             
-            expect(userInDb?.password).not.toBe(testPassword);
+            expect(userInDb?.password).not.toBe(testPassword)
 
             expect(mailService.sendActivationLink).toHaveBeenCalledWith(
                testEmail,
