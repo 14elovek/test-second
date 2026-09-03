@@ -79,7 +79,7 @@ describe('expensesService', () => {
    })
 
    describe('getSortExpenses', () => {
-      test('должен вернуть список расходов за указаный диапазон дат',
+      test('должен вернуть список отсортированных расходов и метаданные на указанной странице',
       async () => {         
          await expenseModel.insertMany([
             createExpense({user: new Types.ObjectId(), sum: 67, title: 'Лечение', date: new Date('2026-02-01')}),
@@ -89,15 +89,24 @@ describe('expensesService', () => {
 
          const dateFrom = '2026-01-01'
          const dateTo = '2026-02-25'
+         const page = 1
+         const limit = 10
 
-         const expenses = await expensesService.getSortExpenses(
+         const result = await expensesService.getSortExpenses(
             dateFrom,
             dateTo,
+            page,
+            limit,
             testUserId.toString()
          )
 
-         expect(expenses).toHaveLength(1)
-         expect(expenses[0].sum).toBe(150)
+         expect(result.expenses).toHaveLength(1)
+         expect(result.expenses[0].sum).toBe(150)
+
+         expect(result.meta.currentPage).toBe(1)
+         expect(result.meta.limit).toBe(10)
+         expect(result.meta.totalItems).toBe(1)
+         expect(result.meta.totalPages).toBe(1)
       })
    })
 
@@ -138,25 +147,35 @@ describe('expensesService', () => {
    })
 
    describe('getExpensesForMonth()', () => {
-      test('должен отфильтровать расходы за месяц и вернуть их вместе общей суммой', async () => {
-         const testDateStr = '2026-05-15T00:00:00.000Z'
+      test('должен вернуть список расходов за указаный месяц на указанной странице', async () => {
+         const testDateStrFirst = '2026-05-15T00:00:00.000Z'
+         const testDateStrSecond = '2026-05-15T00:01:00.000Z'
+         const page = 1
+         const limit = 10
          
          await expenseModel.insertMany([
-            createExpense({ sum: 300, title: 'Продукты', date: new Date(testDateStr) }),
-            createExpense({ sum: 150, title: 'Кофе', date: new Date(testDateStr) }),
+            createExpense({ sum: 300, title: 'Продукты', date: new Date(testDateStrFirst) }),
+            createExpense({ sum: 150, title: 'Кофе', date: new Date(testDateStrSecond) }),
             createExpense({ sum: 350, title: 'мало', date: new Date('2026-04-28T00:00:00.000Z') }),
             createExpense({ sum: 100, title: 'много', date: new Date('2026-06-01T00:00:00.000Z') }),
          ])
 
          const result = await expensesService.getExpensesForMonth(
-            testUserId.toString(),
-            testDateStr
+            testDateStrFirst,
+            page,
+            limit,
+            testUserId.toString()
          )
 
-         expect(result.sum).toBe(450)
+         expect(result.totalSum).toBe(450)
          expect(result.expenses).toHaveLength(2)
-         expect(result.expenses[0].sum).toBe(300)
-         expect(result.expenses[1].sum).toBe(150)
+         expect(result.expenses[0].sum).toBe(150)
+         expect(result.expenses[1].sum).toBe(300)
+
+         expect(result.meta.currentPage).toBe(1)
+         expect(result.meta.limit).toBe(10)
+         expect(result.meta.totalItems).toBe(2)
+         expect(result.meta.totalPages).toBe(1)
       })
    })
 

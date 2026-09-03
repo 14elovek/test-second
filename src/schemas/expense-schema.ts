@@ -1,5 +1,6 @@
 import { z } from "zod";
-import mongoose from "mongoose";
+import mongoose from "mongoose"
+import { paginationQuerySchema } from "./pagination-schema";
 
 const objectIdSchema = z.string().refine(
    (val) => mongoose.Types.ObjectId.isValid(val),
@@ -36,32 +37,18 @@ const expenseSchemas = {
 
    getSortExpensesQuery: z.object({
       dateFrom: z.iso.date({ message: "Неверный формат даты начала (ожидается ГГГГ-ММ-ДД)" }),
-      dateTo: z.iso.date({ message: "Неверный формат даты конца (ожидается ГГГГ-ММ-ДД)" })
-   }),
+      dateTo: z.iso.date({ message: "Неверный формат даты конца (ожидается ГГГГ-ММ-ДД)" }),
+   }).extend(paginationQuerySchema.shape),
 
    getExpensesForMonth: z.object({
       date: z.iso.date({ message: "Неверный формат даты (ожидается ГГГГ-ММ-ДД)" }),
-   }),
+   }).extend(paginationQuerySchema.shape),
 
    deleteExpenseParams: z.object({
       expenseId: objectIdSchema,
    }),
 
-   getExpensesQuery: z.object({
-      page: z.coerce
-         .number()
-         .int('Страница должна быть целым числом')
-         .positive('Номер страницы должен быть больше 0')
-         .default(1),
-
-           
-      limit: z.coerce
-         .number()
-         .int('Лимит должен быть целым числом')
-         .positive('Лимит должен быть больше 0')
-         .max(100, 'Нельзя запросить больше 100 элементов')
-         .default(10)
-   })
+   getExpensesQuery: paginationQuerySchema
 }
 
 export default expenseSchemas

@@ -15,6 +15,13 @@ interface UpdateExpenseBody {
    category: string
 }
 
+interface getSortExpensesQuery {
+   dateFrom: string,
+   dateTo: string,
+   page: number,
+   limit: number
+}
+
 class ExpensesController {
    async getExpenses(
       req: Request<{},{},{},{page: number, limit: number}>,
@@ -30,14 +37,16 @@ class ExpensesController {
    }
 
    async getSortExpenses(
-      req: Request<{},{},{},{ dateFrom: string, dateTo: string }>,
+      req: Request<{},{},{},getSortExpensesQuery>,
       res: Response
    ) {
       checkAuth(req)
 
       const {dateFrom, dateTo} = req.query
+      const page = Number(req.query.page)
+      const limit = Number(req.query.limit)
          
-      const expenses = await expensesService.getSortExpenses(dateFrom, dateTo, req.user.id)
+      const expenses = await expensesService.getSortExpenses(dateFrom, dateTo, page, limit, req.user.id)
       res.json(expenses)
    }
 
@@ -57,12 +66,14 @@ class ExpensesController {
       res.status(200).json({ success: true })
    }
 
-   async getExpensesForMonth(req: Request<{},{},{},{ date: string }>, res: Response) {
+   async getExpensesForMonth(req: Request<{},{},{},{ date: string, page: number, limit: number}>, res: Response) {
       checkAuth(req)
 
       const { date } = req.query
+      const page = Number(req.query.page)
+      const limit = Number(req.query.limit)
 
-      const expenses = await expensesService.getExpensesForMonth(req.user.id, date)
+      const expenses = await expensesService.getExpensesForMonth(date, page, limit, req.user.id)
       res.json(expenses)
    }
 

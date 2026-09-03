@@ -1,5 +1,7 @@
 import expenseModel from '../models/expenseModel'
 import ApiError from '../exceptions/api-error'
+import { Types } from 'mongoose'
+import { paginate } from '../utils/paginate'
 
 class ExpensesService {
    async addExpense(userId: string, sum: number, title: string, category?: string) {
@@ -19,36 +21,30 @@ class ExpensesService {
    }
 
    async getExpenses(page: number, limit: number, userId: string) {
-      const skip = (page - 1) * limit
+      const result =  await paginate(
+         expenseModel,
+         { user: userId },
+         { page, limit, sort: { date: -1 }}
+      )
 
-      const [expenses, totalItems] = await Promise.all([
-         expenseModel.find({ user: userId })
-            .sort({ date: -1 })
-            .skip(skip)
-            .limit(limit),
-
-         expenseModel.countDocuments({ user: userId })
-      ])
-
-      const totalPages = Math.ceil(totalItems / limit)
-
-      return {
-         expenses,
-         meta: {
-            totalItems,
-            totalPages,
-            currentPage: page,
-            limit
-         }
-      }
+      return { expenses: result.data, meta: result.meta}
    }
 
-   async getSortExpenses(dateFrom: string, dateTo: string, userId: string) {
-      return await expenseModel.find({
-         date: {$gte: new Date(dateFrom),
-         $lte: new Date(dateTo)},
+   async getSortExpenses(
+      dateFrom: string,
+      dateTo: string,
+      page: number,
+      limit: number,
+      userId: string
+   ) {
+      const filter = {
+         date: {$gte: new Date(dateFrom), $lte: new Date(dateTo)},
          user: userId
-      })
+      }
+
+      const result =  await paginate(expenseModel, filter, { page, limit, sort: { date: -1 }})
+
+      return { expenses: result.data, meta: result.meta}
    }
 
    async updateExpense(
@@ -70,23 +66,27 @@ class ExpensesService {
       return await expense.save()
    }
 
-   async getExpensesForMonth(userId: string, fullDateStr: string) {
-      const date = new Date(fullDateStr);
+   async getExpensesForMonth(fullDateStr: string, page: number, limit: number, userId: string) {
+      const date = new Date(fullDateStr)
   
-      const year = date.getUTCFullYear();
-      const month = date.getUTCMonth(); 
+      const year = date.getUTCFullYear()
+      const month = date.getUTCMonth();
 
       const dateFrom = new Date(Date.UTC(year, month, 1));
       const dateTo = new Date(Date.UTC(year, month + 1, 1));
+      const filter = {date: {$gte: dateFrom, $lt: dateTo}, user: new Types.ObjectId(userId)}
 
-      const expenses = await expenseModel.find({date: {$gte: dateFrom, $lt: dateTo}, user: userId})
+      const [result, aggregationResult] = await Promise.all([
+         paginate(expenseModel, filter, {page, limit, sort: { date: -1 }}),
+         expenseModel.aggregate([
+            { $match: filter },
+            { $group: { _id: null, total: { $sum: "$sum" }}}
+         ])
+      ])
 
-      let sum = 0
-      for (const expense of expenses) {
-         sum += expense.sum
-      }
-
-      return { expenses, sum }
+      const totalSum = aggregationResult[0]?.total
+      console.log(totalSum)
+      return { expenses: result.data, meta: result.meta, totalSum }
    }
 
    async removeExpense(expenseId: string, userId: string) {
