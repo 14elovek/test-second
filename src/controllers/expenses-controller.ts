@@ -16,13 +16,17 @@ interface UpdateExpenseBody {
 }
 
 class ExpensesController {
-   async getExpenses(req: Request, res: Response) {
+   async getExpenses(
+      req: Request<{},{},{},{page: number, limit: number}>,
+      res: Response
+   ) {
       checkAuth(req)
 
-      checkAuth(req)
+      const page = Number(req.query.page)
+      const limit = Number(req.query.limit)
 
-      const expenses = await expensesService.getExpenses(req.user.id)
-      res.json(expenses)
+      const result = await expensesService.getExpenses(page, limit, req.user.id)
+      res.json(result)
    }
 
    async getSortExpenses(

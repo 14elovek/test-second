@@ -76,7 +76,7 @@ describe('expenseService', () => {
    })
 
    describe('GET /api/expenses', () => {
-      test('должен вернуть все расходы пользователя',
+      test('должен вернуть список расходов пользователя и метаданные на указанной странице',
          async() => {
             await expenseModel.create({
                user: userId, sum: 200, title: 'молоко', date: new Date(), category: 'продукты'
@@ -87,13 +87,23 @@ describe('expenseService', () => {
 
             const response = await request(app)
                .get('/api/expenses')
+               .query({ limit: 10, page: 1 })
                .set('Authorization', `Bearer ${accessToken}`)
 
             expect(response.status).toBe(200)
-            expect(response.body).toEqual([
-               expect.objectContaining({ title: 'молоко', sum: 200, category: 'продукты' }),
-               expect.objectContaining({ title: 'печенье', sum: 300})
-            ])
+            expect(response.body).toEqual({
+               expenses: [
+                  expect.objectContaining({ title: 'печенье', sum: 300}),
+                  expect.objectContaining({ title: 'молоко', sum: 200, category: 'продукты' })
+               ],
+
+               meta: {
+                  totalItems: 2,
+                  totalPages: 1,
+                  currentPage: 1,
+                  limit: 10,
+               }
+            })
          }
       )
 

@@ -18,7 +18,7 @@ router.post('/addExpense', authMiddleware, validate({body: expenseSchemas.addExp
 router.patch('/updateExpense', authMiddleware, validate({body: expenseSchemas.updateExpenseBody}), expensesController.updateExpense)
 // router.post('/setLimit', validateSum, authMiddleware, expensesController.setLimit)
 router.delete('/expenses/:expenseId', authMiddleware, validate({params: expenseSchemas.deleteExpenseParams}), expensesController.removeExpense)
-router.get('/expenses', authMiddleware, expensesController.getExpenses)
+router.get('/expenses', authMiddleware, validate({query: expenseSchemas.getExpensesQuery}), expensesController.getExpenses)
 router.get('/expenses/search', authMiddleware, validate({query: expenseSchemas.getSortExpensesQuery}), expensesController.getSortExpenses)
 router.get('/expenses/date', authMiddleware, validate({query: expenseSchemas.getExpensesForMonth}), expensesController.getExpensesForMonth)
 

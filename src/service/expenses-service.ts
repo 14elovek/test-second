@@ -18,8 +18,29 @@ class ExpensesService {
       })
    }
 
-   async getExpenses(userId: string) {
-      return await expenseModel.find({user: userId})
+   async getExpenses(page: number, limit: number, userId: string) {
+      const skip = (page - 1) * limit
+
+      const [expenses, totalItems] = await Promise.all([
+         expenseModel.find({ user: userId })
+            .sort({ date: -1 })
+            .skip(skip)
+            .limit(limit),
+
+         expenseModel.countDocuments({ user: userId })
+      ])
+
+      const totalPages = Math.ceil(totalItems / limit)
+
+      return {
+         expenses,
+         meta: {
+            totalItems,
+            totalPages,
+            currentPage: page,
+            limit
+         }
+      }
    }
 
    async getSortExpenses(dateFrom: string, dateTo: string, userId: string) {

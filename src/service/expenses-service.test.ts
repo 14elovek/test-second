@@ -52,25 +52,29 @@ describe('expensesService', () => {
    })
 
    describe('getExpenses', () => {
-      test('должен вернуть список всех расходов пользователя',
+      test('должен вернуть список всех расходов пользователя и метаданные на указанной странице',
       async () => {
          await expenseModel.insertMany([
             createExpense({user: new Types.ObjectId(), sum: 67, title: 'Лечение'}),
-            createExpense({sum: 150, title: 'Кофе'}),
-            createExpense({sum: 1200, title: 'Продукты'})
+            createExpense({sum: 150, title: 'Кофе', date: new Date('2026-01-02')}),
+            createExpense({sum: 1200, title: 'Продукты', date: new Date('2026-01-01')})
          ])
 
-         const expenses = await expensesService.getExpenses(testUserId.toString())
+         const result = await expensesService.getExpenses(1, 10, testUserId.toString())
 
-         expect(expenses).toBeTruthy()
-         expect(expenses).toHaveLength(2)
+         expect(result).toBeTruthy()
+         expect(result.expenses).toHaveLength(2)
 
-         expect(expenses[0].title).toBe('Кофе')
-         expect(expenses[0].sum).toBe(150)
-         expect(expenses[1].title).toBe('Продукты')
-         expect(expenses[1].sum).toBe(1200)
+         expect(result.expenses[0].title).toBe('Кофе')
+         expect(result.expenses[0].sum).toBe(150)
+         expect(result.expenses[1].title).toBe('Продукты')
+         expect(result.expenses[1].sum).toBe(1200)
+         expect(result.expenses[0].user.toString()).toBe(testUserId.toString())
 
-         expect(expenses[0].user.toString()).toBe(testUserId.toString())
+         expect(result.meta.currentPage).toBe(1)
+         expect(result.meta.limit).toBe(10)
+         expect(result.meta.totalItems).toBe(2)
+         expect(result.meta.totalPages).toBe(1)
       })
    })
 
